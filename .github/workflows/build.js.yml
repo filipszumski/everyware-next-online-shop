@@ -2,34 +2,40 @@ name: build
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   lint:
-
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x, 24.x]
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js 18
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-        cache: 'yarn'
-    - run: yarn install
-    - run: yarn lint
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: yarn install
+      - run: yarn lint
 
   type-check:
-
     runs-on: ubuntu-latest
-  
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x, 24.x]
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js 18
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-        cache: 'yarn'
-    - run: yarn install
-    - run: yarn codegen
-    - run: yarn tsc --noEmit
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: yarn install
+      - run: yarn codegen
+      - run: yarn tsc --noEmit
