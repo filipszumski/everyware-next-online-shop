@@ -1,5 +1,5 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { ChangeEvent, useState } from "react";
 
 import { useCartContext } from "@/context/cartContext/CartContext";

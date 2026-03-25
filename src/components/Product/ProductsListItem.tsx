@@ -1,5 +1,5 @@
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Link from "next/link";
 
 import { useCartContext } from "@/context/cartContext/CartContext";

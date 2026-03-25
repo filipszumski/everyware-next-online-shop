@@ -1,7 +1,7 @@
 import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon } from "@heroicons/react/20/solid";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 import { APP_ROUTES, NAVIGATION_LIST } from "@/shared/constants";
 
