@@ -5,6 +5,7 @@ import { APP_ROUTES } from "./appRoutes";
 
 type NavigationList = NavigationListItem[];
 
+// TODO - GET RID OR REFACTOR THIS
 export const NAVIGATION_LIST: NavigationList = [
   {
     href: APP_ROUTES.home,
@@ -14,10 +15,7 @@ export const NAVIGATION_LIST: NavigationList = [
     icon: HomeIcon,
   },
   {
-    href: {
-      pathname: APP_ROUTES.productsPage,
-      query: { page: "1" },
-    },
+    href: `${APP_ROUTES.products}/1`,
     basePathname: APP_ROUTES.products,
     title: "Products",
     icon: ShoppingBagIcon,

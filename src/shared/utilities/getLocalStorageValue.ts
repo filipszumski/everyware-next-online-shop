@@ -7,6 +7,8 @@ export const getLocalStorageValue = <T>(
     localStorageValue: unknown,
   ) => localStorageValue is T,
 ) => {
+  if (typeof window === "undefined") return fallback;
+
   const localStorageValue = localStorage.getItem(key);
 
   if (localStorageValue) {

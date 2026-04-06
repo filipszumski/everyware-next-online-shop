@@ -1,11 +1,11 @@
 import { Stars } from "@/components/Rating/Stars";
 import { ProductWithMarkdown } from "@/graphql/products/types";
 
-type ProductReview = {
+type ProductReviewProps = {
   review: ProductWithMarkdown["reviews"][number];
 };
 
-export const ProductReview = ({ review }: ProductReview) => {
+export const ProductReview = ({ review }: ProductReviewProps) => {
   return (
     <li
       key={review.id}

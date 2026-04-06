@@ -1,43 +1,42 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.js";
 
 @layer base {
   :root {
-    --color-neutral-50: theme("colors.gray.50");
-    --color-neutral-100: theme("colors.gray.100");
-    --color-neutral-200: theme("colors.gray.200");
-    --color-neutral-300: theme("colors.gray.300");
-    --color-neutral-400: theme("colors.gray.400");
-    --color-neutral-500: theme("colors.gray.500");
-    --color-neutral-600: theme("colors.gray.600");
-    --color-neutral-700: theme("colors.gray.700");
-    --color-neutral-800: theme("colors.gray.800");
-    --color-neutral-900: theme("colors.gray.900");
+    --color-neutral-50: var(--color-gray-50);
+    --color-neutral-100: var(--color-gray-100);
+    --color-neutral-200: var(--color-gray-200);
+    --color-neutral-300: var(--color-gray-300);
+    --color-neutral-400: var(--color-gray-400);
+    --color-neutral-500: var(--color-gray-500);
+    --color-neutral-600: var(--color-gray-600);
+    --color-neutral-700: var(--color-gray-700);
+    --color-neutral-800: var(--color-gray-800);
+    --color-neutral-900: var(--color-gray-900);
 
-    --color-primary-50: theme("colors.blue.50");
-    --color-primary-100: theme("colors.blue.100");
-    --color-primary-200: theme("colors.blue.200");
-    --color-primary-300: theme("colors.blue.300");
-    --color-primary-400: theme("colors.blue.400");
-    --color-primary-500: theme("colors.blue.500");
-    --color-primary-600: theme("colors.blue.600");
-    --color-primary-700: theme("colors.blue.700");
-    --color-primary-800: theme("colors.blue.800");
-    --color-primary-900: theme("colors.blue.900");
+    --color-primary-50: var(--color-blue-50);
+    --color-primary-100: var(--color-blue-100);
+    --color-primary-200: var(--color-blue-200);
+    --color-primary-300: var(--color-blue-300);
+    --color-primary-400: var(--color-blue-400);
+    --color-primary-500: var(--color-blue-500);
+    --color-primary-600: var(--color-blue-600);
+    --color-primary-700: var(--color-blue-700);
+    --color-primary-800: var(--color-blue-800);
+    --color-primary-900: var(--color-blue-900);
 
     --primary: var(--color-primary-500);
-    --on-primary: theme("colors.white");
+    --on-primary: white;
     --primary-light: var(--color-primary-100);
     --primary-active: var(--color-primary-700);
     --background: var(--color-neutral-100);
     --background-contrast: var(--color-neutral-200);
-    --background-light: theme("colors.white");
+    --background-light: white;
     --text: var(--color-neutral-800);
     --text-secondary: var(--color-neutral-400);
     --disabled: var(--color-neutral-400);
     --border: var(--color-neutral-200);
-    --error: theme("colors.red.500");
+    --error: var(--color-red-500);
 
     /* REM */
     --header-height: 4.5;

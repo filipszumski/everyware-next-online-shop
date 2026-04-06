@@ -1,3 +1,4 @@
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -9,7 +10,7 @@ import { API_ROUTES } from "@/shared/constants/appRoutes";
 
 import { newsletterFormSchema } from "./newsletterFormSchema";
 
-type NewsletterForm = z.infer<typeof newsletterFormSchema>;
+type NewsletterFormType = z.infer<typeof newsletterFormSchema>;
 
 const newsletterFormDefaultValues = {
   email: "",
@@ -21,14 +22,14 @@ export const NewsletterForm = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<NewsletterForm>({
+  } = useForm<NewsletterFormType>({
     defaultValues: newsletterFormDefaultValues,
     mode: "onSubmit",
     reValidateMode: "onChange",
     resolver: zodResolver(newsletterFormSchema),
   });
 
-  const onSubmit: SubmitHandler<NewsletterForm> = async (data) => {
+  const onSubmit: SubmitHandler<NewsletterFormType> = async (data) => {
     const parsedFormData = newsletterFormSchema.safeParse(data);
 
     if (parsedFormData.success) {
@@ -38,7 +39,7 @@ export const NewsletterForm = () => {
           parsedFormData.data,
         );
         reset();
-      } catch (e) {
+      } catch {
         console.error("An error occurred");
       }
     }

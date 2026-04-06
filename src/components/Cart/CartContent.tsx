@@ -1,12 +1,10 @@
-import { TrashIcon } from "@heroicons/react/24/outline";
-
 import { useCartContext } from "@/context/cartContext/CartContext";
 
-import { Button } from "../Button";
-import { CartItem } from "./CartItem";
+import { CartItemsList } from "./CartItemsList";
+import { ClearCartButton } from "./ClearCartButton";
 
 export const CartContent = () => {
-  const { cartItems, clearCart } = useCartContext();
+  const { cartItems } = useCartContext();
 
   return (
     <div className="md:col-span-2 grid grid-cols-1 gap-4 content-start">
@@ -15,16 +13,10 @@ export const CartContent = () => {
           Cart <span className="text-textSecondary">({cartItems.length})</span>
         </h2>
         <div>
-          <Button icon={TrashIcon} variant="text" onClick={() => clearCart()}>
-            Clear cart
-          </Button>
+          <ClearCartButton />
         </div>
       </div>
-      <ul className="grid grid-cols-1 gap-6 justify-items-center">
-        {cartItems.map((cartItemData) => (
-          <CartItem key={cartItemData.data.id} item={cartItemData} />
-        ))}
-      </ul>
+      <CartItemsList />
     </div>
   );
 };

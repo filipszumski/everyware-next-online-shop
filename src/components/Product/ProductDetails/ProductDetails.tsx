@@ -1,10 +1,12 @@
-import { useQuery } from "@apollo/client";
+// TO DO - IS IT
+"use client";
+
+import { useQuery } from "@apollo/client/react";
 import { PlusIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { NextSeo, ProductJsonLd } from "next-seo";
 import { useState } from "react";
 
-import { SkeletonElement } from "@/components/SkeleteonElement";
 import { useCartContext } from "@/context/cartContext/CartContext";
 import {
   GetProductReviewDocument,
@@ -15,7 +17,6 @@ import { ProductWithMarkdown } from "@/graphql/products/types";
 import { APP_ROUTES } from "@/shared/constants";
 import { RATING_SCALE } from "@/shared/constants/ratingScale";
 import { SEO_DEFAULTS } from "@/shared/constants/seoDefaults";
-import { withLoader } from "@/shared/utilities/withLoader";
 
 import { Button } from "../../Button";
 import { Modal } from "../../Modal";
@@ -29,6 +30,7 @@ type ProductDetailsProps = {
   data: ProductWithMarkdown;
 };
 
+// TODO - DOES THIS WHOLE COMPONENT NEED TO BE CLIENT? HANDLE REVIEW FORM INVALIDATION
 export const ProductDetails = ({
   data: {
     description,
@@ -51,7 +53,6 @@ export const ProductDetails = ({
       slug,
     },
   });
-  const RatingWithLoading = withLoader(Rating);
 
   const currentReviews = data?.product?.reviews || reviews;
 
@@ -67,12 +68,12 @@ export const ProductDetails = ({
       <NextSeo
         title={name}
         description={description}
-        canonical={`${process.env.NEXT_PUBLIC_APP_URL}${APP_ROUTES.productsDetails}/${slug}`}
+        canonical={`${process.env.NEXT_PUBLIC_APP_URL}${APP_ROUTES.productDetails}/${slug}`}
         openGraph={{
           type: "product",
           title: name,
           description: description,
-          url: `${process.env.NEXT_PUBLIC_APP_URL}${APP_ROUTES.productsDetails}/${slug}`,
+          url: `${process.env.NEXT_PUBLIC_APP_URL}${APP_ROUTES.productDetails}/${slug}`,
           images: images.map(({ height, url, width }) => ({
             url,
             type: "image/jpeg",
@@ -118,20 +119,22 @@ export const ProductDetails = ({
             alt={name}
             fill
             className="object-contain"
-            sizes="(max-width: 768px) 100vw, 50vw"
             priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{
+              maxWidth: "100%",
+            }}
           />
         </div>
         <div className="flex flex-col justify-start gap-6">
           <div className="grid grid-cols-1 gap-2">
             <h2 className="text-3xl font-bold">{name}</h2>
             <div className="flex justify-between items-center">
-              <RatingWithLoading
+              <Rating
                 ratingValue={ratingValue}
                 reviewCount={reviewCount}
                 displayMode="scale"
-                loading={loading}
-                loader={<SkeletonElement className="w-48" />}
+                isLoading={loading}
               />
               <Button
                 variant="text"
