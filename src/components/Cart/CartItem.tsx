@@ -1,5 +1,5 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { ChangeEvent, useState } from "react";
 
 import { useCartContext } from "@/context/cartContext/CartContext";
@@ -80,6 +80,9 @@ export const CartItem = ({
           fill
           className="object-contain"
           sizes="120px"
+          style={{
+            maxWidth: "100%",
+          }}
         />
       </div>
       <div className="flex-1 grid items-center gap-2 grid-cols-cartItemsSmall sm:grid-cols-cartItems">

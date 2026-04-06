@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
@@ -6,7 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 import lodash from "lodash";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 
 import { DEFAULT_TAKE, PAGE_COUNT } from "@/shared/constants";
 import { twMerge } from "@/shared/utilities/twMerge";
@@ -21,13 +23,15 @@ const MAX_VISIBLE_PAGE_BUTTONS = 5;
 
 type Props = {
   itemsCount: number;
+  basePathname: string;
 };
 
-export const Pagination = ({ itemsCount }: Props) => {
-  const router = useRouter();
-  const pathname = router.pathname;
-  const routerQuery = router.query;
-  const currentPage = Number(routerQuery.page);
+export const Pagination = ({ itemsCount, basePathname }: Props) => {
+  const params = useParams<{ page: string }>();
+
+  const pageQueryParam = params?.page ?? "1";
+
+  const currentPage = Number(pageQueryParam);
 
   const pageButtonsCount = Math.ceil(itemsCount / DEFAULT_TAKE);
 
@@ -49,7 +53,7 @@ export const Pagination = ({ itemsCount }: Props) => {
       <ul className="flex gap-2 items-center justify-center">
         <li>
           <Link
-            href={getPageLink(pathname, 1)}
+            href={getPageLink(basePathname, 1)}
             className={twMerge({
               ...backwardButtonDisabledClass,
             })}
@@ -59,7 +63,7 @@ export const Pagination = ({ itemsCount }: Props) => {
         </li>
         <li>
           <Link
-            href={getPageLink(pathname, currentPage - 1)}
+            href={getPageLink(basePathname, currentPage - 1)}
             className={twMerge({
               ...backwardButtonDisabledClass,
             })}
@@ -75,7 +79,7 @@ export const Pagination = ({ itemsCount }: Props) => {
           );
 
           const page = firstPageNumber + index;
-          const link = getPageLink(pathname, page);
+          const link = getPageLink(basePathname, page);
 
           return (
             <li key={page}>
@@ -96,7 +100,7 @@ export const Pagination = ({ itemsCount }: Props) => {
         })}
         <li>
           <Link
-            href={getPageLink(pathname, currentPage + 1)}
+            href={getPageLink(basePathname, currentPage + 1)}
             className={twMerge({
               ...forwardButtonDisabledClass,
             })}
@@ -106,7 +110,7 @@ export const Pagination = ({ itemsCount }: Props) => {
         </li>
         <li>
           <Link
-            href={getPageLink(pathname, actualPageButtonsCount)}
+            href={getPageLink(basePathname, actualPageButtonsCount)}
             className={twMerge({
               ...forwardButtonDisabledClass,
             })}

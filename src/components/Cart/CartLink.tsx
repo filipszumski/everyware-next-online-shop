@@ -1,3 +1,5 @@
+"use client";
+
 import { useCartContext } from "@/context/cartContext/CartContext";
 import { APP_ROUTES } from "@/shared/constants";
 
@@ -14,8 +16,7 @@ export const CartLink = ({ children, ...props }: LinkProps) => {
           className="
             w-4 h-4 rounded-full bg-primary text-onPrimary text-xs 
             absolute right-0 
-            flex justify-center items-centers
-          "
+            flex justify-center items-center"
         >
           {allCartItemsQuantity}
         </div>

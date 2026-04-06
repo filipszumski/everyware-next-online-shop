@@ -46,10 +46,5 @@ export const getFirstPageNumber = (
 };
 
 export const getPageLink = (pathname: string, page: number): Url => {
-  return {
-    pathname: pathname,
-    query: {
-      page: page,
-    },
-  };
+  return `${pathname}/${page}`;
 };

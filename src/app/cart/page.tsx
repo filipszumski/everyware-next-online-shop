@@ -1,3 +1,5 @@
+"use client";
+
 import { CartContent } from "@/components/Cart/CartContent";
 import { CartSummary } from "@/components/Cart/CartSummary";
 import { useCartContext } from "@/context/cartContext/CartContext";

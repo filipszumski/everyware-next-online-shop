@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import type { AppProps } from "next/app";
 import { DefaultSeo } from "next-seo";
 
@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <ApolloProvider client={apolloClient}>
         <CartContextProvider>
           <Layout>
+            {/* TODO - TRANSFER SEO */}
             <DefaultSeo {...SEO} />
             <Component {...pageProps} />
           </Layout>

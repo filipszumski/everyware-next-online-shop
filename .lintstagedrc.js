@@ -1,12 +1,6 @@
-const path = require("path");
-
-const buildEslintCommand = (filenames) =>
-  `next lint --fix --file ${filenames
-    .map((f) => path.relative(process.cwd(), f))
-    .join(" --file ")}
-    `;
+const buildEslintCommand = (filenames) => `eslint --fix ${filenames.join(" ")}`;
 
 module.exports = {
-  "**/*.(ts|tsx)": () => ['yarn codegen', "yarn tsc --noEmit"],
+  "**/*.(ts|tsx)": () => ["npm run codegen", "npm run tscheck"],
   "**/*.(ts|tsx|js)": buildEslintCommand,
 };

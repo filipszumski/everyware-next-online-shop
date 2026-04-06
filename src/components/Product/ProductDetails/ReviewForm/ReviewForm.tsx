@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -81,7 +81,7 @@ export const ReviewForm = ({
         }
         handleReviewModalClose();
         reset();
-      } catch (e) {
+      } catch {
         console.error("An error occurred");
       }
     }

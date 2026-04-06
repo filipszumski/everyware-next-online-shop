@@ -11,7 +11,9 @@ export const Footer = () => {
         </p>
         <NewsletterForm />
       </div>
-      <p className="p-2 pt-4">&copy; 2023 Copywright. SzumSoft</p>
+      <p className="p-2 pt-4">
+        &copy; {new Date().getFullYear()} Copywright. SzumSoft
+      </p>
     </footer>
   );
 };

@@ -16,6 +16,5 @@ export type CartState = {
     id: CartItemData["id"],
     qty: CartItem["quantity"],
   ) => void;
-  isCartItemsFromLocalStorageSet: boolean;
   summaryPrice: number;
 };

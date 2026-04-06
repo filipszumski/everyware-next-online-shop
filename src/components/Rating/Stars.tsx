@@ -1,3 +1,4 @@
+"use client";
 import { MouseEvent, SVGProps, useState } from "react";
 
 import { RATING_SCALE } from "@/shared/constants/ratingScale";

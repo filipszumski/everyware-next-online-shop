@@ -1,4 +1,6 @@
-import { useMutation } from "@apollo/client";
+"use client";
+
+import { useMutation } from "@apollo/client/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,9 +13,9 @@ import { TextField } from "../Form/Input/TextField";
 import { RowContainer } from "./RowContainer";
 import { checkoutFormSchema } from "./schema";
 
-type CheckoutForm = z.infer<typeof checkoutFormSchema>;
+type CheckoutFormType = z.infer<typeof checkoutFormSchema>;
 
-const checkoutFormDefaultValues: CheckoutForm = {
+const checkoutFormDefaultValues: CheckoutFormType = {
   address: "",
   apartment: "",
   cardNumber: "",
@@ -35,7 +37,7 @@ export const CheckoutForm = () => {
     formState: { errors, isSubmitting },
     handleSubmit,
     reset,
-  } = useForm<CheckoutForm>({
+  } = useForm<CheckoutFormType>({
     mode: "onSubmit",
     reValidateMode: "onChange",
     resolver: zodResolver(checkoutFormSchema),
@@ -43,7 +45,7 @@ export const CheckoutForm = () => {
   });
   const [createOrder] = useMutation(CreateOrderDocument);
 
-  const onSubmit: SubmitHandler<CheckoutForm> = async (data) => {
+  const onSubmit: SubmitHandler<CheckoutFormType> = async (data) => {
     const parsedFormData = checkoutFormSchema.safeParse(data);
 
     if (parsedFormData.success) {
@@ -59,7 +61,7 @@ export const CheckoutForm = () => {
           },
         });
         reset();
-      } catch (e) {
+      } catch {
         console.error("An error occurred");
       }
     }

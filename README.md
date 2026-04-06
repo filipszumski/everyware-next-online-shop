@@ -1,6 +1,7 @@
 # Everyware - online shop
 
 ## Description
+
 An online shop created with a modern tech stack focusing on performance, scalability, and best practices in web development. Hosted on Vercel for seamless deployment. This project leverages the following technologies:
 
 - Next.js
@@ -29,8 +30,8 @@ An online shop created with a modern tech stack focusing on performance, scalabi
 
 ![Products page image](/public/product-details.png)
 
-- **Cart Logic**: Utilizes localStorage for managing the shopping cart, with plans 
-to sync the cart remotely.
+- **Cart Logic**: Utilizes localStorage for managing the shopping cart, with plans
+  to sync the cart remotely.
 
 ![Cart page image](/public/cart.png)
 
@@ -45,6 +46,7 @@ to sync the cart remotely.
 - Writing end-to-end tests.
 
 ## Next
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

@@ -1,4 +1,6 @@
-import { useRouter } from "next/router";
+"use client";
+
+import { usePathname } from "next/navigation";
 
 import { Link, LinkProps } from "@/components/Link";
 import { twMerge } from "@/shared/utilities/twMerge";
@@ -10,13 +12,13 @@ type NavLinkProps = LinkProps & {
 
 function isActiveNavLink(
   basePathname: string,
-  currentPathname: string,
+  currentPathname: string | null,
   exact?: boolean,
 ) {
   if (exact) {
     return currentPathname === basePathname;
   } else {
-    return currentPathname.startsWith(basePathname);
+    return currentPathname?.startsWith(basePathname) ?? false;
   }
 }
 
@@ -27,7 +29,7 @@ export const NavLink = ({
   className,
   ...restProps
 }: NavLinkProps) => {
-  const { pathname } = useRouter();
+  const pathname = usePathname();
 
   return (
     <Link

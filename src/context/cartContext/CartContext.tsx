@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   PropsWithChildren,
@@ -17,26 +19,23 @@ const CartContext = createContext<CartState | null>(null);
 
 export const CartContextProvider = ({ children }: PropsWithChildren) => {
   const [cartItems, setCartItems] = useState<CartState["cartItems"]>([]);
-  const [isCartItemsFromLocalStorageSet, setIsCartItemsFromLocalStorageSet] =
-    useState(false);
 
-  // FIX next 14 update
   useEffect(() => {
-    if (!isCartItemsFromLocalStorageSet) {
-      const localStorageCartItems = getLocalStorageValue(
-        LOCAL_STORAGE_KEYS.cartItems,
-        [],
-        isCartItems,
-      );
-      setCartItems(localStorageCartItems);
-      setIsCartItemsFromLocalStorageSet(true);
-    } else {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEYS.cartItems,
-        JSON.stringify(cartItems),
-      );
-    }
-  }, [cartItems, isCartItemsFromLocalStorageSet]);
+    const localStorageCartItems = getLocalStorageValue(
+      LOCAL_STORAGE_KEYS.cartItems,
+      [],
+      isCartItems,
+    );
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCartItems(localStorageCartItems);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      LOCAL_STORAGE_KEYS.cartItems,
+      JSON.stringify(cartItems),
+    );
+  }, [cartItems]);
 
   const allCartItemsQuantity = cartItems.reduce(
     (acc, cartItem) => acc + cartItem.quantity,
@@ -114,15 +113,9 @@ export const CartContextProvider = ({ children }: PropsWithChildren) => {
       removeItemFromCart,
       allCartItemsQuantity,
       updateCartItemQuantity,
-      isCartItemsFromLocalStorageSet,
       summaryPrice,
     }),
-    [
-      cartItems,
-      allCartItemsQuantity,
-      isCartItemsFromLocalStorageSet,
-      summaryPrice,
-    ],
+    [cartItems, allCartItemsQuantity, summaryPrice],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

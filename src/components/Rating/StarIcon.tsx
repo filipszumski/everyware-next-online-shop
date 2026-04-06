@@ -16,7 +16,7 @@ const validateFillRatio = (fillRatio: number) => {
   try {
     const parseResult = fillRatioSchema.parse(fillRatio);
     return parseResult;
-  } catch (error) {
+  } catch {
     console.error("'fillRatio' prop must be a value from 0 to 1");
     return 0;
   }
