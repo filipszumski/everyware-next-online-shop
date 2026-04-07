@@ -4,7 +4,6 @@
 import { useQuery } from "@apollo/client/react";
 import { PlusIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { NextSeo, ProductJsonLd } from "next-seo";
 import { useState } from "react";
 
 import { useCartContext } from "@/context/cartContext/CartContext";
@@ -14,9 +13,6 @@ import {
   GetProductReviewQueryVariables,
 } from "@/graphql/generated/graphql";
 import { ProductWithMarkdown } from "@/graphql/products/types";
-import { APP_ROUTES } from "@/shared/constants";
-import { RATING_SCALE } from "@/shared/constants/ratingScale";
-import { SEO_DEFAULTS } from "@/shared/constants/seoDefaults";
 
 import { Button } from "../../Button";
 import { Modal } from "../../Modal";
@@ -65,53 +61,6 @@ export const ProductDetails = ({
 
   return (
     <>
-      <NextSeo
-        title={name}
-        description={description}
-        canonical={`${process.env.NEXT_PUBLIC_APP_URL}${APP_ROUTES.productDetails}/${slug}`}
-        openGraph={{
-          type: "product",
-          title: name,
-          description: description,
-          url: `${process.env.NEXT_PUBLIC_APP_URL}${APP_ROUTES.productDetails}/${slug}`,
-          images: images.map(({ height, url, width }) => ({
-            url,
-            type: "image/jpeg",
-            alt: name,
-            height,
-            width,
-          })),
-          siteName: SEO_DEFAULTS.siteName,
-        }}
-        twitter={{
-          cardType: "summary_large_image",
-        }}
-      />
-      <ProductJsonLd
-        productName={name}
-        images={images.map((image) => image.url)}
-        description={description}
-        reviews={currentReviews.map(({ content, headline, name, rating }) => ({
-          author: name,
-          reviewBody: content,
-          name: headline,
-          reviewRating: {
-            bestRating: RATING_SCALE,
-            ratingValue: rating,
-            worstRating: "1",
-          },
-        }))}
-        aggregateRating={{
-          ratingValue: ratingValue,
-          reviewCount: reviewCount,
-        }}
-        offers={[
-          {
-            price,
-            priceCurrency: "USD",
-          },
-        ]}
-      />
       <div className="bg-white rounded-xl shadow-xl grid grid-cols-1 md:grid-cols-2 p-6 gap-6">
         <div className="relative aspect-video md:aspect-square">
           <Image
