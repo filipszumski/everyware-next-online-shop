@@ -1,4 +1,3 @@
-// TO DO - IS IT
 "use client";
 
 import { useQuery } from "@apollo/client/react";

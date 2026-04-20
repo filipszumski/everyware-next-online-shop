@@ -2,11 +2,15 @@
 
 import { useMutation } from "@apollo/client/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { checkoutRequestBodySchema } from "@/app/api/checkout/schema";
 import { useCartContext } from "@/context/cartContext/CartContext";
 import { CreateOrderDocument } from "@/graphql/generated/graphql";
+import { API_ROUTES } from "@/shared/constants/appRoutes";
 
 import { Button } from "../Button";
 import { TextField } from "../Form/Input/TextField";
@@ -14,29 +18,25 @@ import { RowContainer } from "./RowContainer";
 import { checkoutFormSchema } from "./schema";
 
 type CheckoutFormType = z.infer<typeof checkoutFormSchema>;
+type CheckoutRequestBodyType = z.infer<typeof checkoutRequestBodySchema>;
 
 const checkoutFormDefaultValues: CheckoutFormType = {
   address: "",
   apartment: "",
-  cardNumber: "",
   city: "",
   company: "",
-  cvc: "",
   email: "",
-  expirationDate: "",
-  nameOnCard: "",
   postalCode: "",
   region: "",
-  sameAsShipping: "",
 };
 
 export const CheckoutForm = () => {
-  const { summaryPrice } = useCartContext();
+  const router = useRouter();
+  const { summaryPrice, cartItems } = useCartContext();
   const {
     register,
     formState: { errors, isSubmitting },
     handleSubmit,
-    reset,
   } = useForm<CheckoutFormType>({
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -60,9 +60,15 @@ export const CheckoutForm = () => {
             },
           },
         });
-        reset();
       } catch {
         console.error("An error occurred");
+      }
+      const { data } = await axios.post(API_ROUTES.checkout, {
+        cartItems,
+      } satisfies CheckoutRequestBodyType);
+
+      if (data.checkoutUrl) {
+        router.push(data.checkoutUrl);
       }
     }
   };
@@ -79,33 +85,6 @@ export const CheckoutForm = () => {
         required
         error={errors.email?.message}
       />
-      <h2 className="font-bold text-lg">Payment details</h2>
-      <TextField
-        {...register("nameOnCard")}
-        label="Name on card"
-        required
-        error={errors.nameOnCard?.message}
-      />
-      <TextField
-        {...register("cardNumber")}
-        label="Card number"
-        required
-        error={errors.cardNumber?.message}
-      />
-      <RowContainer>
-        <TextField
-          {...register("expirationDate")}
-          label="Experation date (MM/YY)"
-          error={errors.expirationDate?.message}
-          required
-        />
-        <TextField
-          {...register("cvc")}
-          label="CVC"
-          error={errors.cvc?.message}
-          required
-        />
-      </RowContainer>
       <h2 className="font-bold text-lg">Shipping address</h2>
       <TextField
         {...register("company")}
@@ -145,9 +124,11 @@ export const CheckoutForm = () => {
           required
         />
       </RowContainer>
-      <Button disabled={isSubmitting} type="submit">
-        Submit
-      </Button>
+      <RowContainer>
+        <Button disabled={isSubmitting} type="submit" fullWidth>
+          Continue to payment
+        </Button>
+      </RowContainer>
     </form>
   );
 };

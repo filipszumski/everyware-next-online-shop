@@ -16,7 +16,7 @@ type Params = Promise<{
 }>;
 
 export async function generateStaticParams() {
-  const pages = Array.from({ length: 10 }, (_, i) => i + 1);
+  const pages = Array.from({ length: 1 }, (_, i) => i + 1);
 
   return pages.map((page) => ({
     page: page.toString(),
@@ -44,12 +44,16 @@ export default async function ProductsPage({ params }: { params: Params }) {
     CACHE_TAGS.productsList(page),
     {
       tags: CACHE_TAGS.productsList(page),
-      revalidate: 60,
+      revalidate: 3600,
     },
   );
-  const { data } = await getProducts();
+  const { data, error } = await getProducts();
 
-  if (!data?.productsConnection.edges) {
+  if (error) {
+    throw error;
+  }
+
+  if (!data?.productsConnection.edges?.length) {
     notFound();
   }
 

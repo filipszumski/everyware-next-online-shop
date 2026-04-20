@@ -1,6 +1,6 @@
+import logo from "@static/everyware-logo.svg";
 import Image from "next/image";
 
-import logo from "../../../../public/everyware-logo.svg";
 import { HeaderCartLink } from "./CartLink";
 import { HamburgerMenu } from "./HamburgerMenu";
 import { NavigationList } from "./NagivationList";

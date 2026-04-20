@@ -34,19 +34,6 @@ export function handleError(e: unknown): NextResponse<ResponseData> {
         },
       );
     }
-  } else {
-    return NextResponse.json(
-      {
-        status: "error",
-        error: {
-          code: 500,
-          message: "An unknown error occurred",
-        },
-      },
-      {
-        status: 500,
-      },
-    );
   }
 
   return NextResponse.json(
