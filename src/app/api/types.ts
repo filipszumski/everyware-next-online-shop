@@ -1,6 +1,6 @@
 type SuccessResponseData = {
   status: "success";
-  data: {
+  data?: {
     name: string;
   };
 };

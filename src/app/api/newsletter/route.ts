@@ -16,12 +16,12 @@ export async function POST(
       {
         status: "error",
         error: {
-          message: issues,
+          message: `Validation failed: ${issues.join(", ")}`,
           code: 400,
         },
       },
       {
-        status: 405,
+        status: 400,
       },
     );
   }

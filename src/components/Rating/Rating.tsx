@@ -17,7 +17,6 @@ export const Rating = ({
   isLoading,
 }: Props) => {
   if (isLoading) {
-    // TODO: ADJUST LOADING TO DISPLAY MODE (size in case of icon skeleton and with scale skeleton)
     return <SkeletonElement className="w-48" />;
   }
 

@@ -95,7 +95,10 @@ export const CartContextProvider = ({ children }: PropsWithChildren) => {
     );
   };
 
-  const clearCart = () => setCartItems([]);
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem(LOCAL_STORAGE_KEYS.cartItems);
+  };
 
   const summaryPrice = useMemo(() => {
     return parseFloat(

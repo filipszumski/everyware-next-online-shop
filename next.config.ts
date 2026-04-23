@@ -1,8 +1,8 @@
-/** @type {import('next').NextConfig} */
+import type { NextConfig } from "next";
 
 import { APP_ROUTES } from "@/shared/constants";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   transpilePackages: ["next-mdx-remote"],
   images: {
