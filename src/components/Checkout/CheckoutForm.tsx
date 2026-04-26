@@ -1,15 +1,14 @@
 "use client";
 
-import { useMutation } from "@apollo/client/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { checkoutRequestBodySchema } from "@/app/api/checkout/schema";
+import { CheckoutResponseData } from "@/app/api/checkout/types";
 import { useCartContext } from "@/context/cartContext/CartContext";
-import { CreateOrderDocument } from "@/graphql/generated/graphql";
 import { API_ROUTES } from "@/shared/constants/appRoutes";
 
 import { Button } from "../Button";
@@ -25,14 +24,13 @@ const checkoutFormDefaultValues: CheckoutFormType = {
   apartment: "",
   city: "",
   company: "",
-  email: "",
   postalCode: "",
   region: "",
 };
 
 export const CheckoutForm = () => {
   const router = useRouter();
-  const { summaryPrice, cartItems } = useCartContext();
+  const { cartItems } = useCartContext();
   const {
     register,
     formState: { errors, isSubmitting },
@@ -43,28 +41,21 @@ export const CheckoutForm = () => {
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: checkoutFormDefaultValues,
   });
-  const [createOrder] = useMutation(CreateOrderDocument);
 
   const onSubmit: SubmitHandler<CheckoutFormType> = async (data) => {
     const parsedFormData = checkoutFormSchema.safeParse(data);
 
+    const cartItemsPayload = cartItems.map((cartItem) => ({
+      slug: cartItem.data.id,
+      quantity: cartItem.quantity,
+    }));
+
     if (parsedFormData.success) {
-      try {
-        const checkoutFormData = parsedFormData.data;
-        await createOrder({
-          variables: {
-            order: {
-              email: checkoutFormData.email,
-              total: summaryPrice,
-              stripeCheckoutId: "123456789",
-            },
-          },
-        });
-      } catch {
-        console.error("An error occurred");
-      }
-      const { data } = await axios.post(API_ROUTES.checkout, {
-        cartItems,
+      const { data } = await axios.post<
+        CheckoutRequestBodyType,
+        AxiosResponse<CheckoutResponseData>
+      >(API_ROUTES.checkout, {
+        cartItems: cartItemsPayload,
       } satisfies CheckoutRequestBodyType);
 
       if (data.checkoutUrl) {
@@ -78,13 +69,6 @@ export const CheckoutForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="grid grid-cols-1 gap-4 col-span-2"
     >
-      <h2 className="font-bold text-lg">Contact information</h2>
-      <TextField
-        {...register("email")}
-        label="Email"
-        required
-        error={errors.email?.message}
-      />
       <h2 className="font-bold text-lg">Shipping address</h2>
       <TextField
         {...register("company")}
@@ -102,6 +86,7 @@ export const CheckoutForm = () => {
           {...register("apartment")}
           label="Apartment"
           error={errors.apartment?.message}
+          required
         />
         <TextField
           {...register("city")}
