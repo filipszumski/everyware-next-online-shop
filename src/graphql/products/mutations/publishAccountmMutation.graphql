@@ -1,0 +1,5 @@
+mutation PublishAccount($email: String!, $id: ID!) {
+  publishAccount(where: { id: $id, email: $email }) {
+    id
+  }
+}

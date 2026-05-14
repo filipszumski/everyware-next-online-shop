@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { buttonVariants } from "@/components/Button";
 import { APP_ROUTES } from "@/shared/constants";
@@ -11,22 +12,35 @@ import { APP_ROUTES } from "@/shared/constants";
 }
 export function ProceedToCheckoutLink() {
   const pathname = usePathname();
+  const { status } = useSession();
 
-  const displayCheckoutButton = pathname?.startsWith(APP_ROUTES.cart) ?? false;
+  const isOnCartPage = pathname?.startsWith(APP_ROUTES.cart) ?? false;
+
+  if (!isOnCartPage) return null;
+
+  if (status === "authenticated") {
+    return (
+      <Link
+        href={APP_ROUTES.checkout}
+        className={buttonVariants({
+          variant: "contained",
+          className: "md:w-full",
+        })}
+      >
+        Proceed to checkout
+      </Link>
+    );
+  }
 
   return (
-    <>
-      {!!displayCheckoutButton && (
-        <Link
-          href={APP_ROUTES.checkout}
-          className={buttonVariants({
-            variant: "contained",
-            className: "md:w-full",
-          })}
-        >
-          Proceed to checkout
-        </Link>
-      )}
-    </>
+    <Link
+      href={APP_ROUTES.signIn}
+      className={buttonVariants({
+        variant: "outlined",
+        className: "md:w-full",
+      })}
+    >
+      Log in to proceed to checkout
+    </Link>
   );
 }

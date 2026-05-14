@@ -2,12 +2,16 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Stripe } from "stripe";
 
-import { apolloClient } from "@/graphql/apolloClient";
+import { authorizedApolloClient } from "@/graphql/apolloClient";
 import {
   CreateOrderDocument,
   CreateOrderMutation,
   CreateOrderMutationVariables,
+  GetAccountDocument,
+  PublishManyOrderItemsDocument,
+  PublishOrderDocument,
 } from "@/graphql/generated/graphql";
+import { stripe } from "@/shared/constants/stripe";
 
 import { handleError } from "../../utils/handleError";
 
@@ -44,25 +48,86 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     switch (event.type) {
       case "checkout.session.completed": {
-        const session = event.data.object;
+        const stripeSession = event.data.object;
+        const lineItems = await stripe.checkout.sessions.listLineItems(
+          stripeSession.id,
+          { expand: ["data.price.product"] },
+        );
 
-        await apolloClient.mutate<
-          CreateOrderMutation,
-          CreateOrderMutationVariables
-        >({
-          mutation: CreateOrderDocument,
-          variables: {
-            order: {
-              email: session.customer_details?.email ?? "",
-              stripeCheckoutId: session.id,
-              total: (session.amount_total ?? 0) / 100,
-              createdAt: new Date(session.created * 1000).toISOString(),
+        if (!stripeSession.metadata?.email) {
+          return NextResponse.json(
+            {
+              error: "No authenticated user found for this session",
             },
+            { status: 400 },
+          );
+        }
+
+        const userData = await authorizedApolloClient.query({
+          query: GetAccountDocument,
+          variables: {
+            email: stripeSession.metadata.email,
           },
         });
+
+        if (!userData.data?.account) {
+          return NextResponse.json(
+            {
+              error: "No authenticated user found for this session",
+            },
+            { status: 400 },
+          );
+        }
+
+        try {
+          const createdOrder = await authorizedApolloClient.mutate<
+            CreateOrderMutation,
+            CreateOrderMutationVariables
+          >({
+            mutation: CreateOrderDocument,
+            variables: {
+              order: {
+                email: stripeSession.customer_details?.email ?? "",
+                stripeCheckoutId: stripeSession.id,
+                total: (stripeSession.amount_total ?? 0) / 100,
+                createdAt: new Date(stripeSession.created * 1000).toISOString(),
+                account: {
+                  connect: {
+                    Account: {
+                      email: userData.data.account.email,
+                      id: userData.data.account.id,
+                    },
+                  },
+                },
+                orderItems: {
+                  create: lineItems.data.map((lineItem) => ({
+                    quantity: lineItem.quantity ?? 1,
+                    total: (lineItem.amount_total ?? 0) / 100,
+                    product: {
+                      connect: {
+                        slug: lineItem.metadata?.slug,
+                      },
+                    },
+                  })),
+                },
+              },
+            },
+          });
+
+          await authorizedApolloClient.mutate({
+            mutation: PublishOrderDocument,
+            variables: { id: createdOrder.data?.createOrder?.id ?? "" },
+          });
+
+          await authorizedApolloClient.mutate({
+            mutation: PublishManyOrderItemsDocument,
+            variables: { orderId: createdOrder.data?.createOrder?.id ?? "" },
+          });
+        } catch (e) {
+          console.error(e, "ellol");
+        }
         break;
       }
-
       default:
         console.warn(`Unhandled event type: ${event.type}`);
     }

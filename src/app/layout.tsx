@@ -1,11 +1,12 @@
 import "@/styles/globals.css";
 
 import { Metadata } from "next";
+import { getServerSession } from "next-auth";
 
-import { Footer, Header } from "@/components";
 import { SEO_DEFAULTS } from "@/shared/constants/seoDefaults";
-import { latoFont } from "@/styles/fonts";
 
+import { latoFont } from "../styles/fonts";
+import { authOptions } from "./api/auth/[...nextauth]/utils/authOptions";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
@@ -33,23 +34,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en" className={latoFont.className}>
       <body>
-        <Providers>
-          <div className="flex flex-col min-h-screen text-textDefault bg-background">
-            <Header />
-            <main className="flex-grow xl:max-w-6xl xl:mx-auto w-full p-4 sm:p-8 lg:p-12 relative">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </Providers>
+        <Providers session={session}>{children}</Providers>
       </body>
     </html>
   );

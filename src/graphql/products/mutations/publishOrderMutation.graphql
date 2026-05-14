@@ -1,0 +1,5 @@
+mutation PublishOrder($id: ID!) {
+  publishOrder(where: { id: $id }, to: PUBLISHED) {
+    id
+  }
+}

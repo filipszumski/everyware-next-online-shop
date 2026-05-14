@@ -6,8 +6,9 @@ import { twMerge } from "@/shared/utilities/twMerge";
 
 export const buttonVariants = cva(
   `
-  inline-flex justify-center whitespace-nowrap w-fit px-4 py-2 rounded-md ring-primary ring-offset-2
-  focus:ring-1 
+  inline-flex justify-center whitespace-nowrap w-fit px-4 py-2 rounded-md outline-none 
+  focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-2
+  
   `,
   {
     variants: {

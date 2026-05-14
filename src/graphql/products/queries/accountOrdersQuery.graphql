@@ -1,0 +1,19 @@
+query GetAccountOrders($email: String!) {
+  account(where: { email: $email }) {
+    orders {
+      id
+      total
+      orderItems {
+        quantity
+        total
+        product {
+          id
+          name
+          images {
+            url
+          }
+        }
+      }
+    }
+  }
+}

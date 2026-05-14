@@ -1,0 +1,12 @@
+mutation PublishManyOrderItems($orderId: ID!) {
+  publishManyOrderItemsConnection(
+    where: { order: { id: $orderId } }
+    to: PUBLISHED
+  ) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}

@@ -13,7 +13,7 @@ import { NAVIGATION_LIST } from "@/shared/constants";
 
 export function HamburgerMenu() {
   return (
-    <Popover className="sm:hidden">
+    <Popover className="lg:hidden">
       <PopoverButton className="flex items-center">
         {<Bars3Icon className="w-6 h-6 text-primary" />}
       </PopoverButton>

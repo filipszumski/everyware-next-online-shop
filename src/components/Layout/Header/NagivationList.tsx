@@ -1,12 +1,23 @@
 "use client";
 
+import { useSession } from "next-auth/react";
+
 import { NavLink } from "@/components/NavLink";
-import { NAVIGATION_LIST } from "@/shared/constants";
+import { NAVIGATION_LIST, PROTECTED_ROUTES } from "@/shared/constants";
 
 export function NavigationList() {
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
+  const visibleItems = NAVIGATION_LIST.filter(
+    (item) =>
+      isAuthenticated ||
+      !PROTECTED_ROUTES.some((route) => item.basePathname.startsWith(route)),
+  );
+
   return (
-    <ul className="hidden sm:flex sm:gap-4 sm:flex-grow">
-      {NAVIGATION_LIST.map((item) => {
+    <ul className="hidden lg:flex lg:gap-4 lg:flex-grow">
+      {visibleItems.map((item) => {
         return (
           <li key={item.title}>
             <NavLink

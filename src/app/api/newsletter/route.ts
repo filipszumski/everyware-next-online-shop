@@ -17,7 +17,6 @@ export async function POST(
         status: "error",
         error: {
           message: `Validation failed: ${issues.join(", ")}`,
-          code: 400,
         },
       },
       {

@@ -1,16 +1,14 @@
-import { useMutation } from "@apollo/client/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { createReviewSchema } from "@/app/api/reviews/schema";
 import { Button } from "@/components/Button";
 import { TextArea } from "@/components/Form/Input/TextArea";
 import { TextField } from "@/components/Form/Input/TextField";
-import {
-  CreateProductReviewDocument,
-  GetProductReviewDocument,
-  PublishProductReviewDocument,
-} from "@/graphql/generated/graphql";
+import { API_ROUTES } from "@/shared/constants";
+import { handleError } from "@/shared/utilities/handleError";
 
 import { ReviewFormRating } from "./ReviewFormRating";
 import { reviewFormSchema } from "./reviewFormSchema";
@@ -34,11 +32,6 @@ export const ReviewForm = ({
   handleReviewModalClose,
   productSlug,
 }: ReviewFormProps) => {
-  const [createProductReview] = useMutation(CreateProductReviewDocument);
-  const [publishProductReview] = useMutation(PublishProductReviewDocument, {
-    refetchQueries: [GetProductReviewDocument],
-  });
-
   const methods = useForm<ReviewFormState>({
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -53,37 +46,15 @@ export const ReviewForm = ({
   } = methods;
 
   const onSubmit: SubmitHandler<ReviewFormState> = async (data) => {
-    const parsedFormData = reviewFormSchema.safeParse(data);
-
-    if (parsedFormData.success) {
-      try {
-        const reviewFormData = parsedFormData.data;
-        const { data } = await createProductReview({
-          variables: {
-            review: {
-              ...reviewFormData,
-              product: {
-                connect: [
-                  {
-                    slug: productSlug,
-                  },
-                ],
-              },
-            },
-          },
-        });
-        if (data?.review?.id) {
-          await publishProductReview({
-            variables: {
-              id: data.review.id,
-            },
-          });
-        }
-        handleReviewModalClose();
-        reset();
-      } catch {
-        console.error("An error occurred");
-      }
+    try {
+      await axios.post<z.infer<typeof createReviewSchema>>(API_ROUTES.reviews, {
+        productSlug,
+        data: data,
+      });
+      handleReviewModalClose();
+      reset();
+    } catch (e) {
+      handleError(e);
     }
   };
 
