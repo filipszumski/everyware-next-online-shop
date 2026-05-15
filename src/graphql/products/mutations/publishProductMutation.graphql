@@ -1,0 +1,5 @@
+mutation PublishProduct($slug: String!) {
+  publishProduct(where: { slug: $slug }, to: PUBLISHED) {
+    id
+  }
+}

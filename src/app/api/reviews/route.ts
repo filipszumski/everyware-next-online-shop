@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { authorizedApolloClient } from "@/graphql/apolloClient";
+import { getAuthorizedClient } from "@/graphql/apolloClientRSC";
 import {
   CreateProductReviewDocument,
+  PublishProductDocument,
   PublishProductReviewDocument,
 } from "@/graphql/generated/graphql";
 
@@ -29,8 +30,9 @@ export async function POST(
   }
 
   const reviewFormData = parsedBody.data.data;
+  const authorizedClient = getAuthorizedClient();
   try {
-    const { data } = await authorizedApolloClient.mutate({
+    const { data } = await authorizedClient.mutate({
       mutation: CreateProductReviewDocument,
       variables: {
         review: {
@@ -51,10 +53,17 @@ export async function POST(
     }
 
     if (data?.review?.id) {
-      await authorizedApolloClient.mutate({
+      await authorizedClient.mutate({
         mutation: PublishProductReviewDocument,
         variables: {
           id: data.review.id,
+        },
+      });
+
+      await authorizedClient.mutate({
+        mutation: PublishProductDocument,
+        variables: {
+          slug: parsedBody.data.productSlug,
         },
       });
     }

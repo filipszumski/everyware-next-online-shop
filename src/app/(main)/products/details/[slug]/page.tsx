@@ -1,11 +1,10 @@
 import { Metadata, ResolvingMetadata } from "next";
-import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { serialize } from "next-mdx-remote/serialize";
 import { ProductJsonLd } from "next-seo";
 
 import { ProductDetails } from "@/components";
-import { apolloClient } from "@/graphql/apolloClient";
+import { query } from "@/graphql/apolloClientRSC";
 import {
   GetProductDocument,
   GetProductQuery,
@@ -29,7 +28,19 @@ export default async function ProductDetailsPage({ params }: Props) {
     notFound();
   }
 
-  const { data } = await getProductDetails(slug)();
+  const { data } = await query<GetProductQuery, GetProductQueryVariables>({
+    variables: {
+      slug,
+    },
+    query: GetProductDocument,
+    context: {
+      fetchOptions: {
+        next: {
+          tags: [CACHE_TAGS.productDetails(slug)],
+        },
+      },
+    },
+  });
 
   if (!data?.product) {
     notFound();
@@ -90,22 +101,6 @@ type Props = {
   }>;
 };
 
-const getProductDetails = (slug: string) =>
-  unstable_cache(
-    async () =>
-      apolloClient.query<GetProductQuery, GetProductQueryVariables>({
-        variables: {
-          slug,
-        },
-        query: GetProductDocument,
-      }),
-    CACHE_TAGS.productDetails(slug),
-    {
-      tags: CACHE_TAGS.productDetails(slug),
-      revalidate: 60,
-    },
-  );
-
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata,
@@ -116,7 +111,19 @@ export async function generateMetadata(
     return {};
   }
 
-  const { data } = await getProductDetails(slug)();
+  const { data } = await query<GetProductQuery, GetProductQueryVariables>({
+    variables: {
+      slug,
+    },
+    query: GetProductDocument,
+    context: {
+      fetchOptions: {
+        next: {
+          tags: [CACHE_TAGS.productDetails(slug)],
+        },
+      },
+    },
+  });
 
   const product = data?.product;
 
@@ -157,32 +164,21 @@ export async function generateMetadata(
 }
 
 export async function generateStaticParams() {
-  const getProductsSlugs = unstable_cache(
-    async () => {
-      const { data } = await apolloClient.query<
-        GetProductsSlugsQuery,
-        GetProductsSlugsQueryVariables
-      >({
-        query: GetProductsSlugsDocument,
-        variables: {
-          first: DEFAULT_TAKE,
-        },
-      });
-
-      if (!data?.products) {
-        return [];
-      }
-
-      return data.products.map(({ slug }) => slug);
+  const { data } = await query<
+    GetProductsSlugsQuery,
+    GetProductsSlugsQueryVariables
+  >({
+    query: GetProductsSlugsDocument,
+    variables: {
+      first: DEFAULT_TAKE,
     },
-    CACHE_TAGS.productsList("1"),
-    {
-      tags: CACHE_TAGS.productsList("1"),
-      revalidate: 60,
-    },
-  );
+  });
 
-  const slugs = await getProductsSlugs();
+  if (!data?.products) {
+    return [];
+  }
+
+  const slugs = data.products.map(({ slug }) => slug);
 
   return slugs.map((slug) => ({
     slug,

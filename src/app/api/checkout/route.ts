@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
-import { apolloClient } from "@/graphql/apolloClient";
+import { getAuthorizedClient } from "@/graphql/apolloClientRSC";
 import {
   GetProductsBySlugDocument,
   GetProductsBySlugQuery,
@@ -45,12 +45,20 @@ export async function POST(
 
     const { cartItems } = requestPayloadParsed.data;
 
-    const { data } = await apolloClient.query<
+    const authorizedClient = getAuthorizedClient();
+    const { data } = await authorizedClient.query<
       GetProductsBySlugQuery,
       GetProductsBySlugQueryVariables
     >({
       query: GetProductsBySlugDocument,
       variables: { slugs: cartItems.map(({ slug }) => slug) },
+      context: {
+        fetchOptions: {
+          next: {
+            revalidate: 0,
+          },
+        },
+      },
     });
 
     if (!data) {

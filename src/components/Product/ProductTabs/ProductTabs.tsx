@@ -1,4 +1,4 @@
-import { Tab } from "@headlessui/react";
+import { TabGroup, TabPanel, TabPanels } from "@headlessui/react";
 
 import { TabList } from "@/components/Tabs/TabsList";
 import { ProductWithMarkdown } from "@/graphql/products/types";
@@ -15,22 +15,22 @@ export type TabsProps = {
 export const ProductTabs = ({ longDescription, reviews }: TabsProps) => {
   return (
     <div className="col-span-1 md:col-span-2 gap-4 flex flex-wrap">
-      <Tab.Group>
-        <TabList>
+      <TabGroup>
+        <TabList className="w-fit mb-4">
           <TabListElement>Description</TabListElement>
           <TabListElement disabled={!reviews.length}>Reviews</TabListElement>
         </TabList>
-        <Tab.Panels className="basis-full">
-          <Tab.Panel className="p-2">
+        <TabPanels className="basis-full">
+          <TabPanel className="p-2">
             {<Markdown>{longDescription}</Markdown>}
-          </Tab.Panel>
-          <Tab.Panel as="ul" className="grid grid-cols-1 gap-4">
+          </TabPanel>
+          <TabPanel as="ul" className="grid grid-cols-1 gap-4">
             {reviews.map((review) => (
               <ProductReview key={review.id} review={review} />
             ))}
-          </Tab.Panel>
-        </Tab.Panels>
-      </Tab.Group>
+          </TabPanel>
+        </TabPanels>
+      </TabGroup>
     </div>
   );
 };

@@ -1,18 +1,18 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { HttpLink } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client-integration-nextjs";
 
-export const apolloClient = new ApolloClient({
-  link: new HttpLink({
+// For client components (browser & SSR)
+export function makeClient() {
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_HYGRAPH_API_URL,
-  }),
-  cache: new InMemoryCache(),
-});
-
-export const authorizedApolloClient = new ApolloClient({
-  link: new HttpLink({
-    uri: process.env.NEXT_PUBLIC_HYGRAPH_API_URL,
-    headers: {
-      Authorization: `Bearer ${process.env.HYGRAPH_AUTH_TOKEN}`,
+    fetchOptions: {
+      next: {
+        revalidate: 60,
+      },
     },
-  }),
-  cache: new InMemoryCache(),
-});
+  });
+  return new ApolloClient({
+    cache: new InMemoryCache(),
+    link: httpLink,
+  });
+}

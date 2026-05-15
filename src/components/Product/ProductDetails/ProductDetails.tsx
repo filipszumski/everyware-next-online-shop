@@ -25,7 +25,6 @@ type ProductDetailsProps = {
   data: ProductWithMarkdown;
 };
 
-// TODO - DOES THIS WHOLE COMPONENT NEED TO BE CLIENT? HANDLE REVIEW FORM INVALIDATION
 export const ProductDetails = ({
   data: {
     description,
@@ -47,6 +46,7 @@ export const ProductDetails = ({
     variables: {
       slug,
     },
+    fetchPolicy: "cache-and-network",
   });
 
   const currentReviews = data?.product?.reviews || reviews;

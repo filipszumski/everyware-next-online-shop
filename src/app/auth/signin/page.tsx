@@ -73,6 +73,7 @@ export default function SignInPage({
           {...register("email")}
           label="Email"
           error={errors.email?.message}
+          required
         />
         <TextField
           {...register("password")}

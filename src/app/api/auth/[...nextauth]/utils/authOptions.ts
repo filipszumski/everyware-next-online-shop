@@ -5,8 +5,9 @@ import CredentialsProvider, {
 } from "next-auth/providers/credentials";
 
 import { SignInFormType } from "@/app/auth/signin/utils/types";
-import { authorizedApolloClient } from "@/graphql/apolloClient";
+import { getAuthorizedClient } from "@/graphql/apolloClientRSC";
 import { GetAccountDocument } from "@/graphql/generated/graphql";
+import { CACHE_TAGS } from "@/shared/constants/cacheTags";
 
 type MappedSignInBodyType = {
   [K in keyof SignInFormType]: CredentialInput;
@@ -27,10 +28,19 @@ export const authOptions: NextAuthOptions = {
       authorize: async (credentials) => {
         if (!credentials) return null;
 
-        const userData = await authorizedApolloClient.query({
+        const authorizedClient = getAuthorizedClient();
+        const userData = await authorizedClient.query({
           query: GetAccountDocument,
           variables: {
             email: credentials.email,
+          },
+          context: {
+            fetchOptions: {
+              next: {
+                tags: [CACHE_TAGS.accountDetails(credentials.email)],
+                revalidate: 0,
+              },
+            },
           },
         });
 

@@ -19,6 +19,7 @@ const documents = {
     "mutation PublishAccount($email: String!, $id: ID!) {\n  publishAccount(where: {id: $id, email: $email}) {\n    id\n  }\n}": types.PublishAccountDocument,
     "mutation PublishManyOrderItems($orderId: ID!) {\n  publishManyOrderItemsConnection(where: {order: {id: $orderId}}, to: PUBLISHED) {\n    edges {\n      node {\n        id\n      }\n    }\n  }\n}": types.PublishManyOrderItemsDocument,
     "mutation PublishOrder($id: ID!) {\n  publishOrder(where: {id: $id}, to: PUBLISHED) {\n    id\n  }\n}": types.PublishOrderDocument,
+    "mutation PublishProduct($slug: String!) {\n  publishProduct(where: {slug: $slug}, to: PUBLISHED) {\n    id\n  }\n}": types.PublishProductDocument,
     "mutation PublishProductReview($id: ID!) {\n  publishReview(where: {id: $id}) {\n    id\n  }\n}": types.PublishProductReviewDocument,
     "query GetAccountOrders($email: String!) {\n  account(where: {email: $email}) {\n    orders {\n      id\n      total\n      orderItems {\n        quantity\n        total\n        product {\n          id\n          name\n          images {\n            url\n          }\n        }\n      }\n    }\n  }\n}": types.GetAccountOrdersDocument,
     "query GetAccount($email: String!) {\n  account(where: {email: $email}) {\n    id\n    email\n    name\n    password\n  }\n}": types.GetAccountDocument,
@@ -67,6 +68,10 @@ export function graphql(source: "mutation PublishManyOrderItems($orderId: ID!) {
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation PublishOrder($id: ID!) {\n  publishOrder(where: {id: $id}, to: PUBLISHED) {\n    id\n  }\n}"): (typeof documents)["mutation PublishOrder($id: ID!) {\n  publishOrder(where: {id: $id}, to: PUBLISHED) {\n    id\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation PublishProduct($slug: String!) {\n  publishProduct(where: {slug: $slug}, to: PUBLISHED) {\n    id\n  }\n}"): (typeof documents)["mutation PublishProduct($slug: String!) {\n  publishProduct(where: {slug: $slug}, to: PUBLISHED) {\n    id\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

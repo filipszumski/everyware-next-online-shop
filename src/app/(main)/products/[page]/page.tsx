@@ -1,8 +1,7 @@
-import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 
 import { Pagination, ProductsListItem } from "@/components";
-import { apolloClient } from "@/graphql/apolloClient";
+import { query } from "@/graphql/apolloClientRSC";
 import {
   GetProductsDocument,
   GetProductsQuery,
@@ -31,27 +30,21 @@ export default async function ProductsPage({ params }: { params: Params }) {
   }
 
   const skip = (+page - 1) * DEFAULT_TAKE;
-  const getProducts = unstable_cache(
-    async () =>
-      apolloClient.query<GetProductsQuery, GetProductsQueryVariables>({
-        variables: {
-          first: DEFAULT_TAKE,
-          skip,
-        },
-        query: GetProductsDocument,
-        context: {},
-      }),
-    CACHE_TAGS.productsList(page),
-    {
-      tags: CACHE_TAGS.productsList(page),
-      revalidate: 3600,
+  const { data } = await query<GetProductsQuery, GetProductsQueryVariables>({
+    variables: {
+      first: DEFAULT_TAKE,
+      skip,
     },
-  );
-  const { data, error } = await getProducts();
-
-  if (error) {
-    throw error;
-  }
+    query: GetProductsDocument,
+    context: {
+      fetchOptions: {
+        next: {
+          tags: [CACHE_TAGS.productsList(page)],
+          revalidate: 240,
+        },
+      },
+    },
+  });
 
   if (!data?.productsConnection.edges?.length) {
     notFound();

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
-import { buttonVariants } from "@/components/Button";
+import { Button, buttonVariants } from "@/components/Button";
 import { APP_ROUTES } from "@/shared/constants";
 
 {
@@ -33,14 +33,14 @@ export function ProceedToCheckoutLink() {
   }
 
   return (
-    <Link
-      href={APP_ROUTES.signIn}
+    <Button
+      onClick={() => signIn()}
       className={buttonVariants({
         variant: "outlined",
         className: "md:w-full",
       })}
     >
       Log in to proceed to checkout
-    </Link>
+    </Button>
   );
 }

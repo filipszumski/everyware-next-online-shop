@@ -1,11 +1,11 @@
 "use client";
 
-import { ApolloProvider } from "@apollo/client/react";
+import { ApolloNextAppProvider } from "@apollo/client-integration-nextjs";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 
 import { CartContextProvider } from "@/context/cartContext/CartContext";
-import { apolloClient } from "@/graphql/apolloClient";
+import { makeClient } from "@/graphql/apolloClient";
 
 export const Providers = ({
   children,
@@ -16,9 +16,9 @@ export const Providers = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <ApolloProvider client={apolloClient}>
+      <ApolloNextAppProvider makeClient={makeClient}>
         <CartContextProvider>{children}</CartContextProvider>
-      </ApolloProvider>
+      </ApolloNextAppProvider>
     </SessionProvider>
   );
 };

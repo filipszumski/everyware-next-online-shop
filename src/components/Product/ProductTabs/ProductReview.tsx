@@ -9,7 +9,7 @@ export const ProductReview = ({ review }: ProductReviewProps) => {
   return (
     <li
       key={review.id}
-      className="grid grid-cols-1 gap-2 p-2 border-2 rounded-lg shadow"
+      className="grid grid-cols-1 gap-2 p-2 border-2 rounded-lg  border-borderDefault"
     >
       <div className="font-bold">{review.name}</div>
       <div className="flex gap-2 items-center">

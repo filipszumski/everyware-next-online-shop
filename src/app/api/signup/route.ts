@@ -1,11 +1,13 @@
 import * as bcrypt from "bcrypt";
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
-import { authorizedApolloClient } from "@/graphql/apolloClient";
+import { getAuthorizedClient } from "@/graphql/apolloClientRSC";
 import {
   CreateAccountDocument,
   PublishAccountDocument,
 } from "@/graphql/generated/graphql";
+import { CACHE_TAGS } from "@/shared/constants/cacheTags";
 
 import { ResponseData } from "../types";
 import { handleError } from "../utils/handleError";
@@ -32,7 +34,8 @@ export async function POST(
   try {
     const hashedPassword = await bcrypt.hash(parsedBody.data.password, 12);
 
-    const response = await authorizedApolloClient.mutate({
+    const authorizedClient = getAuthorizedClient();
+    const response = await authorizedClient.mutate({
       mutation: CreateAccountDocument,
       variables: {
         email: parsedBody.data.email,
@@ -45,12 +48,15 @@ export async function POST(
       throw new Error("Failed to create account");
     }
 
-    await authorizedApolloClient.mutate({
+    await authorizedClient.mutate({
       mutation: PublishAccountDocument,
       variables: {
         email: parsedBody.data.email,
         id: response.data.createAccount.id,
       },
+    });
+    revalidateTag(CACHE_TAGS.accountDetails(parsedBody.data.email), {
+      expire: 0,
     });
   } catch (e) {
     handleError(e);

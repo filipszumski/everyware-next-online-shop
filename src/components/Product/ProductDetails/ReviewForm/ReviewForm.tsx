@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
@@ -7,6 +8,7 @@ import { createReviewSchema } from "@/app/api/reviews/schema";
 import { Button } from "@/components/Button";
 import { TextArea } from "@/components/Form/Input/TextArea";
 import { TextField } from "@/components/Form/Input/TextField";
+import { GetProductReviewDocument } from "@/graphql/generated/graphql";
 import { API_ROUTES } from "@/shared/constants";
 import { handleError } from "@/shared/utilities/handleError";
 
@@ -32,6 +34,7 @@ export const ReviewForm = ({
   handleReviewModalClose,
   productSlug,
 }: ReviewFormProps) => {
+  const apolloClient = useApolloClient();
   const methods = useForm<ReviewFormState>({
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -50,6 +53,9 @@ export const ReviewForm = ({
       await axios.post<z.infer<typeof createReviewSchema>>(API_ROUTES.reviews, {
         productSlug,
         data: data,
+      });
+      await apolloClient.refetchQueries({
+        include: [GetProductReviewDocument],
       });
       handleReviewModalClose();
       reset();

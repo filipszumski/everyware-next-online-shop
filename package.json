@@ -15,7 +15,8 @@
     "tscheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@apollo/client": "^4.1.6",
+    "@apollo/client": "^4.1.9",
+    "@apollo/client-integration-nextjs": "^0.14.5",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.0.16",
     "@hookform/resolvers": "^3.3.4",
@@ -29,7 +30,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "eslint-config-next": "^16.2.1",
-    "graphql": "^16.8.1",
+    "graphql": "^16.14.0",
     "lodash": "^4.17.21",
     "next": "^16.2.3",
     "next-auth": "^4.24.14",
@@ -40,6 +41,7 @@
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.72.0",
     "react-markdown": "^8.0.6",
+    "rxjs": "^7.8.2",
     "sharp": "^0.34.5",
     "stripe": "^22.0.1",
     "tailwind-merge": "^2.2.1",

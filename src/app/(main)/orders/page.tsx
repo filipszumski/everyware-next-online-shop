@@ -3,8 +3,9 @@ import { getServerSession } from "next-auth";
 import React from "react";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/utils/authOptions";
-import { apolloClient } from "@/graphql/apolloClient";
+import { query } from "@/graphql/apolloClientRSC";
 import { GetAccountOrdersDocument } from "@/graphql/generated/graphql";
+import { CACHE_TAGS } from "@/shared/constants/cacheTags";
 
 export default async function OrdersPage() {
   const session = await getServerSession(authOptions);
@@ -13,9 +14,17 @@ export default async function OrdersPage() {
     throw new Error("No authenticated user found");
   }
 
-  const orders = await apolloClient.query({
+  const orders = await query({
     query: GetAccountOrdersDocument,
     variables: { email: session?.user.email },
+    context: {
+      fetchOptions: {
+        next: {
+          tags: [CACHE_TAGS.accountOrders(session?.user.email)],
+          revalidate: 60,
+        },
+      },
+    },
   });
 
   return (

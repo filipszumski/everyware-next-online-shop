@@ -1,8 +1,9 @@
+import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Stripe } from "stripe";
 
-import { authorizedApolloClient } from "@/graphql/apolloClient";
+import { getAuthorizedClient } from "@/graphql/apolloClientRSC";
 import {
   CreateOrderDocument,
   CreateOrderMutation,
@@ -11,6 +12,7 @@ import {
   PublishManyOrderItemsDocument,
   PublishOrderDocument,
 } from "@/graphql/generated/graphql";
+import { CACHE_TAGS } from "@/shared/constants/cacheTags";
 import { stripe } from "@/shared/constants/stripe";
 
 import { handleError } from "../../utils/handleError";
@@ -63,10 +65,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           );
         }
 
-        const userData = await authorizedApolloClient.query({
+        const authorizedClient = getAuthorizedClient();
+        const userData = await authorizedClient.query({
           query: GetAccountDocument,
           variables: {
             email: stripeSession.metadata.email,
+          },
+          context: {
+            fetchOptions: {
+              next: {
+                tags: [CACHE_TAGS.accountDetails(stripeSession.metadata.email)],
+                revalidate: 0,
+              },
+            },
           },
         });
 
@@ -79,53 +90,53 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           );
         }
 
-        try {
-          const createdOrder = await authorizedApolloClient.mutate<
-            CreateOrderMutation,
-            CreateOrderMutationVariables
-          >({
-            mutation: CreateOrderDocument,
-            variables: {
-              order: {
-                email: stripeSession.customer_details?.email ?? "",
-                stripeCheckoutId: stripeSession.id,
-                total: (stripeSession.amount_total ?? 0) / 100,
-                createdAt: new Date(stripeSession.created * 1000).toISOString(),
-                account: {
-                  connect: {
-                    Account: {
-                      email: userData.data.account.email,
-                      id: userData.data.account.id,
-                    },
+        const createdOrder = await authorizedClient.mutate<
+          CreateOrderMutation,
+          CreateOrderMutationVariables
+        >({
+          mutation: CreateOrderDocument,
+          variables: {
+            order: {
+              email: stripeSession.customer_details?.email ?? "",
+              stripeCheckoutId: stripeSession.id,
+              total: (stripeSession.amount_total ?? 0) / 100,
+              createdAt: new Date(stripeSession.created * 1000).toISOString(),
+              account: {
+                connect: {
+                  Account: {
+                    email: userData.data.account.email,
+                    id: userData.data.account.id,
                   },
                 },
-                orderItems: {
-                  create: lineItems.data.map((lineItem) => ({
-                    quantity: lineItem.quantity ?? 1,
-                    total: (lineItem.amount_total ?? 0) / 100,
-                    product: {
-                      connect: {
-                        slug: lineItem.metadata?.slug,
-                      },
+              },
+              orderItems: {
+                create: lineItems.data.map((lineItem) => ({
+                  quantity: lineItem.quantity ?? 1,
+                  total: (lineItem.amount_total ?? 0) / 100,
+                  product: {
+                    connect: {
+                      slug: lineItem.metadata?.slug,
                     },
-                  })),
-                },
+                  },
+                })),
               },
             },
-          });
+          },
+        });
 
-          await authorizedApolloClient.mutate({
-            mutation: PublishOrderDocument,
-            variables: { id: createdOrder.data?.createOrder?.id ?? "" },
-          });
+        await authorizedClient.mutate({
+          mutation: PublishOrderDocument,
+          variables: { id: createdOrder.data?.createOrder?.id ?? "" },
+        });
 
-          await authorizedApolloClient.mutate({
-            mutation: PublishManyOrderItemsDocument,
-            variables: { orderId: createdOrder.data?.createOrder?.id ?? "" },
-          });
-        } catch (e) {
-          console.error(e, "ellol");
-        }
+        await authorizedClient.mutate({
+          mutation: PublishManyOrderItemsDocument,
+          variables: { orderId: createdOrder.data?.createOrder?.id ?? "" },
+        });
+        revalidateTag(CACHE_TAGS.accountOrders(userData.data.account.email), {
+          expire: 60,
+        });
+
         break;
       }
       default:
