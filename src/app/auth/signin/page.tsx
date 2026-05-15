@@ -29,6 +29,7 @@ export default function SignInPage({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue,
   } = useForm<SignInFormType>({
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -62,9 +63,17 @@ export default function SignInPage({
     }
   };
 
+  function prefill() {
+    setValue("email", "admin@admin.pl");
+    setValue("password", "qwe123Q!1");
+  }
+
   return (
     <div>
       <h1 className="text-2xl text-center mb-8">Sign In</h1>
+      <Button variant={"text"} className="mb-4" onClick={() => prefill()}>
+        Prefill sign in form
+      </Button>
       {errorMessage && (
         <p className="text-error text-center mb-4">{errorMessage}</p>
       )}
