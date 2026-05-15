@@ -1,7 +1,7 @@
-import { Category } from "@/graphql/generated/graphql";
+import { GetProductQuery } from "@/graphql/generated/graphql";
 
 type CategoriesProps = {
-  categories: Pick<Category, "name">[];
+  categories: NonNullable<GetProductQuery["product"]>["categories"];
 };
 
 export const Categories = ({ categories }: CategoriesProps) => {

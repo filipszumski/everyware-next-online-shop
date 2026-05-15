@@ -10,6 +10,9 @@ const config: CodegenConfig = {
     "src/graphql/generated/": {
       preset: "client",
       plugins: [],
+      config: {
+        onlyOperationTypes: true,
+      },
     },
   },
 };
